@@ -7,6 +7,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +54,7 @@ public class PIEntityManager implements PI {
     }
 
     @Override
+    @Transactional
     public PersonalInfosDTO savePersonalInfo(PersonalInfosDTO personalInfosDTO) {
 
         PersonalInfos personalInfo = PersonalInfos.builder()
@@ -63,14 +65,14 @@ public class PIEntityManager implements PI {
                 .phoneNumber(personalInfosDTO.getPhoneNumber())
                 .build();
 
-        entityManager.getTransaction().begin();
+
         entityManager.persist(personalInfo);
-        entityManager.getTransaction().commit();
 
         return personalInfosDTO;
     }
 
     @Override
+    @Transactional
     public PersonalInfosDTO updatePersonalInfo(PersonalInfosDTO personalInfosDTO) {
 
         PersonalInfos personalInfo = PersonalInfos.builder()
@@ -81,21 +83,18 @@ public class PIEntityManager implements PI {
                 .phoneNumber(personalInfosDTO.getPhoneNumber())
                 .build();
 
-        entityManager.getTransaction().begin();
         entityManager.merge(personalInfo);
-        entityManager.getTransaction().commit();
 
         return personalInfosDTO;
     }
 
     @Override
+    @Transactional
     public boolean deletePersonalInfoById(Long id) {
 
         PersonalInfos personalInfo = entityManager.find(PersonalInfos.class, id);
         if (personalInfo != null) {
-            entityManager.getTransaction().begin();
             entityManager.remove(personalInfo);
-            entityManager.getTransaction().commit();
             return true;
         }
         return false;
